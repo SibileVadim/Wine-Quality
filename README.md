@@ -1,104 +1,37 @@
-# Wine-Quality
-import numpy as np
-import pandas as pd
+About Dataset
+Data Set Information:
 
-from tqdm import tqdm
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import matplotlib.pylab as pylab
-import seaborn as sns
-from sklearn.preprocessing import LabelEncoder
-from imblearn.over_sampling import RandomOverSampler
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
+The dataset was downloaded from the UCI Machine Learning Repository.
 
-# вспомогательные функции для построения графиков
+The two datasets are related to red and white variants of the Portuguese "Vinho Verde" wine. The reference [Cortez et al., 2009]. Due to privacy and logistic issues, only physicochemical (inputs) and sensory (the output) variables are available (e.g. there is no data about grape types, wine brand, wine selling price, etc.).
 
-def plot_distribution( df , var , target , **kwargs ):
-    row = kwargs.get( 'row' , None )
-    col = kwargs.get( 'col' , None )
-    facet = sns.FacetGrid( df , hue=target , aspect=4 , row = row , col = col )
-    facet.map( sns.kdeplot , var , fill=True )
-    facet.set( xlim=( 0 , df[ var ].max() ) )
-    facet.add_legend()
+These datasets can be viewed as classification or regression tasks. The classes are ordered and not balanced (e.g. there are munch more normal wines than excellent or poor ones). Outlier detection algorithms could be used to detect the few excellent or poor wines. Also, we are not sure if all input variables are relevant. So it could be interesting to test feature selection methods.
 
-def plot_distribution_2(df, var, target):
-    grid = sns.jointplot(x=df[var], y=df[target], kind='reg')
-    grid.fig.set_figwidth(8)
-    grid.fig.set_figheight(8)
-    plt.show()
+Two datasets were combined and few values were randomly removed.
 
-def plot_boxplot(df, var, target):
-    plt.figure(figsize=(16, 8))
-    sns.boxplot(x=df[target], y=df[var], whis=1.5)
-    plt.show()
+Attribute Information:
 
-def plot_correlation_map( df ):
-    corr = df.corr()
-    corr = np.round(corr, 2)
-    corr[np.abs(corr) < 0.3] = 0
-    _ , ax = plt.subplots( figsize =( 12 , 10 ) )
-    cmap = sns.diverging_palette( 220 , 10 , as_cmap = True )
-    _ = sns.heatmap(
-        corr,
-        cmap = cmap,
-        square=True,
-        cbar_kws={ 'shrink' : .9 },
-        ax=ax,
-        annot = True,
-        annot_kws = { 'fontsize' : 12 }
-    )
+For more information, read [Cortez et al., 2009].
+Input variables (based on physicochemical tests):
+1 - fixed acidity
+2 - volatile acidity
+3 - citric acid
+4 - residual sugar
+5 - chlorides
+6 - free sulfur dioxide
+7 - total sulfur dioxide
+8 - density
+9 - pH
+10 - sulphates
+11 - alcohol
+Output variable (based on sensory data):
+12 - quality (score between 0 and 10)
 
-df = pd.read_csv('/content/winequalityN.csv')
+About this file
 
-df.head(5)
+Add Suggestion
+The data was downloaded from UCI Machine Learning Repository.
 
-df.describe()
+The two datasets are related to red and white variants of the Portuguese "Vinho Verde" wine. For more details, the reference [Cortez et al., 2009]. Due to privacy and logistic issues, only physicochemical (inputs) and sensory (the output) variables are available (e.g. there is no data about grape types, wine brand, wine selling price, etc.).
 
-df.isnull().sum()
-
-## важные элементы подсвечиваются красным
-
-plot_correlation_map(df)
-
-columns_to_plot = list(df.columns)[1:-1]
-num_columns = len(columns_to_plot)
-
-for i, col in enumerate(columns_to_plot):
-    plot_distribution_2(df, var=col, target='quality')
-
-plt.tight_layout()
-plt.show()
-
-for i, col in enumerate(columns_to_plot):
-    plot_distribution(df, var=col, target='quality', row = 'type')
-
-plt.tight_layout()
-plt.show()
-
-sns.pairplot(df, plot_kws={'alpha': 0.6});
-
-list(df.columns)[1:-1]
-
-for i, col in enumerate(columns_to_plot):
-    plot_boxplot(df, var=col, target='quality')
-
-plt.tight_layout()
-plt.show()
-
-df_new = df.dropna()
-df_new = df_new.drop('total sulfur dioxide', axis = 1)
-
-le = LabelEncoder()
-df_new["type"] = le.fit_transform(df_new["type"])
-
-x = df_new.iloc[:,:-1].values
-y = df_new.iloc[:,[-1]].values
-
-ros = RandomOverSampler()
-x_data,y_data = ros.fit_resample(x,y)
-
-ss = StandardScaler()
-x_scaled = ss.fit_transform(x_data)
-
-x_train,x_test,y_train,y_test = train_test_split(x_scaled,y_data,test_size=0.2,random_state=42)
+These datasets can be viewed as classification or regression tasks. The classes are ordered and not balanced (e.g. there are much more normal wines than excellent or poor ones). Outlier detection algorithms could be used to detect the few excellent or poor wines.
